@@ -125,7 +125,6 @@ export class PassengerFlowController {
         const findex = forecastedValues.findIndex(
           (item) => item.date == dayjs().format('YYYY/MM/DD'),
         );
-        console.log(findex);
         for (let j = 0; j < findex + 7; j++) {
           await this.passengerFlowService.create({
             people_num: Number(forecastedValues[j].value),

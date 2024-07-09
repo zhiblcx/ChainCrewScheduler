@@ -14,7 +14,6 @@ export class UploadController {
   @Post()
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@UploadedFile() file) {
-    console.log(file);
     return {
       code: 200,
       message: '上传成功',

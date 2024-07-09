@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, Req, RequestMethod } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -11,18 +11,32 @@ import { UserModule } from './user/user.module';
 import { AuthMiddleware } from './middle/auth/auth.middleware';
 import { UploadModule } from './upload/upload.module';
 import { PassengerFlowModule } from './passenger_flow/passenger_flow.module';
+import { ConfigModule, ConfigService, ConfigType } from '@nestjs/config';
+import databaseConfig from './config/database.config';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: '123456',
-      database: 'chaincrew_scheduler',
-      entities: [],
-      autoLoadEntities: true,
+    ConfigModule.forRoot({
+      cache: true,
+      isGlobal: true,
+      envFilePath: ['.env.local'],
+      load: [databaseConfig],
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (_, datatype: ConfigType<typeof databaseConfig>) => {
+        return {
+          type: 'mysql',
+          username: datatype.DATABASE_USER,
+          password: datatype.DATABASE_PASSWORD,
+          host: datatype.DATABASE_HOST,
+          port: parseInt(datatype.DATABASE_PORT),
+          database: datatype.DATABASE_NAME,
+          entities: [],
+          autoLoadEntities: true,
+        };
+      },
+      inject: [ConfigService, databaseConfig.KEY],
     }),
     UserModule,
     StoreModule,
