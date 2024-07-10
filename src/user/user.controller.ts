@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Param, Request } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { decrypt } from '../utils/encription';
-import * as jwt from 'jsonwebtoken';
+// import * as jwt from 'jsonwebtoken';
 
 @Controller('user')
 export class UserController {
@@ -88,39 +88,39 @@ export class UserController {
   }
 
   // 登录
-  @Post('login')
-  async login(@Body() user: object) {
-    const currentUser = await this.userService.findOne(user['account']);
+  // @Post('login')
+  // async login(@Body() user: object) {
+  //   const currentUser = await this.userService.findOne(user['account']);
 
-    if (currentUser == null) {
-      return {
-        code: 400,
-        message: '该用户不存在',
-      };
-    }
-    if (currentUser['password'] !== user['password']) {
-      return {
-        code: 400,
-        message: '密码错误',
-      };
-    }
-    const token = jwt.sign(
-      {
-        id: currentUser.id,
-        type: currentUser['position'],
-        store_id: currentUser.store_id,
-      },
-      'your_secret_key',
-      {
-        expiresIn: '7d',
-      },
-    );
-    return {
-      code: 200,
-      message: '登录成功',
-      data: { token: token },
-    };
-  }
+  //   if (currentUser == null) {
+  //     return {
+  //       code: 400,
+  //       message: '该用户不存在',
+  //     };
+  //   }
+  //   if (currentUser['password'] !== user['password']) {
+  //     return {
+  //       code: 400,
+  //       message: '密码错误',
+  //     };
+  //   }
+  //   const token = jwt.sign(
+  //     {
+  //       id: currentUser.id,
+  //       type: currentUser['position'],
+  //       store_id: currentUser.store_id,
+  //     },
+  //     'your_secret_key',
+  //     {
+  //       expiresIn: '7d',
+  //     },
+  //   );
+  //   return {
+  //     code: 200,
+  //     message: '登录成功',
+  //     data: { token: token },
+  //   };
+  // }
 
   // 根据编号查找员工信息
   @Get('userinfo/:id')

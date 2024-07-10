@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -8,10 +8,11 @@ import { SchedulingStatusModule } from './scheduling_status/scheduling_status.mo
 import { SchedulingTimerModule } from './scheduling_timer/scheduling_timer.module';
 import { StoreModule } from './store/store.module';
 import { UserModule } from './user/user.module';
-import { AuthMiddleware } from './middle/auth/auth.middleware';
+// import { AuthMiddleware } from './middle/auth/auth.middleware';
 import { UploadModule } from './upload/upload.module';
 import { PassengerFlowModule } from './passenger_flow/passenger_flow.module';
 import { ConfigModule, ConfigService, ConfigType } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
 import databaseConfig from './config/database.config';
 
 @Module({
@@ -46,22 +47,23 @@ import databaseConfig from './config/database.config';
     SchedulingTimerModule,
     UploadModule,
     PassengerFlowModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(AuthMiddleware)
-      .exclude(
-        { path: 'admin/login', method: RequestMethod.ALL },
-        { path: 'upload', method: RequestMethod.ALL },
-        { path: 'admin/register', method: RequestMethod.ALL },
-        { path: 'user/login', method: RequestMethod.ALL },
-        { path: 'user/userinfo/:id', method: RequestMethod.ALL },
-        { path: 'user/register', method: RequestMethod.ALL },
-      )
-      .forRoutes('/');
-  }
+  // configure(consumer: MiddlewareConsumer) {
+  //   consumer
+  //     .apply(AuthMiddleware)
+  //     .exclude(
+  //       { path: 'admin/login', method: RequestMethod.ALL },
+  //       { path: 'upload', method: RequestMethod.ALL },
+  //       { path: 'admin/register', method: RequestMethod.ALL },
+  //       { path: 'user/login', method: RequestMethod.ALL },
+  //       { path: 'user/userinfo/:id', method: RequestMethod.ALL },
+  //       { path: 'user/register', method: RequestMethod.ALL },
+  //     )
+  //     .forRoutes('/');
+  // }
 }
