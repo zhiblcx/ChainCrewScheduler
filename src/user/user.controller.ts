@@ -13,11 +13,13 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { decrypt } from '../utils/encription';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 import { CreateUserVo } from './vo/create-user.vo';
+import { Public } from 'src/auth/constants';
 
 @ApiTags('用户管理')
 @Controller('user')
@@ -27,6 +29,17 @@ export class UserController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: '添加员工',
+  })
+  @ApiBody({
+    type: CreateUserDto,
+    examples: {
+      user: {
+        value: {
+          account: '20240295',
+          password: '123456789',
+        },
+      },
+    },
   })
   // 添加员工
   @Post('add')
@@ -69,8 +82,10 @@ export class UserController {
   })
   // 注册
   @HttpCode(HttpStatus.OK)
+  @Public()
   @Post('register')
   async update(@Body() updateUser: CreateUserDto) {
+    console.log(updateUser);
     const user = await this.userService.findOne(
       parseInt(updateUser['account']),
     );
@@ -135,7 +150,7 @@ export class UserController {
   @Get('userinfo/:id')
   async selectUserInfo(@Param('id') id: number) {
     try {
-      const { password, ...result } = await this.userService.findOne(id);
+      const { password: _, ...result } = await this.userService.findOne(id);
       return {
         code: 200,
         message: '查找成功',
