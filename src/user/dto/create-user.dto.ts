@@ -1,13 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, NotContains, Length } from 'class-validator';
 export class CreateUserDto {
-  @ApiProperty({
-    example: 'admin',
-    description: '用户名',
-  })
+  @ApiProperty({ description: '用户名' })
+  @IsNotEmpty({ message: '用户名不能为空' })
+  @NotContains(' ', { message: '用户名不能包含空格' })
+  @Length(4, 16, { message: '用户名长度为 4 ~ 16 位' })
   account: string;
-  @ApiProperty({
-    example: '123456',
-    description: '密码',
-  })
+  @ApiProperty({ description: '密码' })
   password: string;
 }

@@ -8,11 +8,12 @@ import { SchedulingStatusModule } from './scheduling_status/scheduling_status.mo
 import { SchedulingTimerModule } from './scheduling_timer/scheduling_timer.module';
 import { StoreModule } from './store/store.module';
 import { UserModule } from './user/user.module';
-// import { AuthMiddleware } from './middle/auth/auth.middleware';
 import { UploadModule } from './upload/upload.module';
 import { PassengerFlowModule } from './passenger_flow/passenger_flow.module';
 import { ConfigModule, ConfigService, ConfigType } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
+import { APP_PIPE } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
 import databaseConfig from './config/database.config';
 
 @Module({
@@ -50,7 +51,13 @@ import databaseConfig from './config/database.config';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_PIPE,
+      useClass: ValidationPipe,
+    },
+  ],
 })
 export class AppModule {
   // configure(consumer: MiddlewareConsumer) {
