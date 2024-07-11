@@ -3,6 +3,7 @@ import { AdminService } from './admin.service';
 import { UserService } from 'src/user/user.service';
 import * as jwt from 'jsonwebtoken';
 import { decrypt } from 'src/utils/encription';
+import { Public } from 'src/auth/constants';
 
 @Controller('')
 export class AdminController {
@@ -11,6 +12,7 @@ export class AdminController {
     private readonly userService: UserService,
   ) {}
 
+  @Public()
   // 登录
   @Post('admin/login')
   async login(@Body() admin: object) {

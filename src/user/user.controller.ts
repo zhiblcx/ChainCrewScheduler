@@ -1,13 +1,33 @@
-import { Controller, Get, Post, Body, Param, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Request,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { decrypt } from '../utils/encription';
-// import * as jwt from 'jsonwebtoken';
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
+import { CreateUserVo } from './vo/create-user.vo';
 
+@ApiTags('用户管理')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: '添加员工',
+  })
   // 添加员工
   @Post('add')
   async create(@Request() req: Request, @Body() createUserDto: CreateUserDto) {
@@ -27,7 +47,13 @@ export class UserController {
     }
   }
 
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: '所有员工',
+  })
+
   // 得到该门店所有员工
+  @ApiBearerAuth()
   @Get('all')
   async findAll(@Request() req: Request) {
     const user = req['user'];
@@ -38,10 +64,16 @@ export class UserController {
     };
   }
 
+  @ApiOperation({
+    summary: '注册',
+  })
   // 注册
+  @HttpCode(HttpStatus.OK)
   @Post('register')
-  async update(@Body() updateUser: object) {
-    const user = await this.userService.findOne(updateUser['account']);
+  async update(@Body() updateUser: CreateUserDto) {
+    const user = await this.userService.findOne(
+      parseInt(updateUser['account']),
+    );
     if (user == null) {
       return {
         code: 400,
@@ -70,6 +102,10 @@ export class UserController {
     };
   }
 
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: '删除员工',
+  })
   // 辞退
   @Post('delete/:id')
   async remove(@Param('id') id: string) {
@@ -87,46 +123,19 @@ export class UserController {
     }
   }
 
-  // 登录
-  // @Post('login')
-  // async login(@Body() user: object) {
-  //   const currentUser = await this.userService.findOne(user['account']);
-
-  //   if (currentUser == null) {
-  //     return {
-  //       code: 400,
-  //       message: '该用户不存在',
-  //     };
-  //   }
-  //   if (currentUser['password'] !== user['password']) {
-  //     return {
-  //       code: 400,
-  //       message: '密码错误',
-  //     };
-  //   }
-  //   const token = jwt.sign(
-  //     {
-  //       id: currentUser.id,
-  //       type: currentUser['position'],
-  //       store_id: currentUser.store_id,
-  //     },
-  //     'your_secret_key',
-  //     {
-  //       expiresIn: '7d',
-  //     },
-  //   );
-  //   return {
-  //     code: 200,
-  //     message: '登录成功',
-  //     data: { token: token },
-  //   };
-  // }
-
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: '查找员工',
+  })
+  @ApiOkResponse({
+    description: '返回示例',
+    type: CreateUserVo,
+  })
   // 根据编号查找员工信息
   @Get('userinfo/:id')
   async selectUserInfo(@Param('id') id: number) {
     try {
-      const result = await this.userService.findOne(id);
+      const { password, ...result } = await this.userService.findOne(id);
       return {
         code: 200,
         message: '查找成功',
